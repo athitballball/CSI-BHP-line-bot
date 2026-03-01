@@ -40,14 +40,7 @@ def scrape_csi():
         print("✅ เข้าหน้า BHP แล้ว")
         time.sleep(2)
 
-        driver.get(f"{LOGIN_URL}/Home/viewscore/BHP")
-        print("✅ เข้าหน้า viewscore แล้ว")
-        time.sleep(2)
-
-        dashboard_btn = wait.until(EC.element_to_be_clickable(
-            (By.ID, "btnDashboard")
-        ))
-        dashboard_btn.click()
+        driver.get(f"{LOGIN_URL}/dashboard/BHP?sitecode=BHP")
         print("✅ คลิก Dashboard แล้ว")
         time.sleep(3)
 
@@ -56,9 +49,9 @@ def scrape_csi():
         data = []
         for row in rows:
             cols = row.find_elements(By.TAG_NAME, "td")
-            if len(cols) >= 2:
+            if len(cols) >= 1:
                 text0 = cols[0].text.strip()
-                text1 = cols[1].text.strip()
+                text1 = cols[1].text.strip() if len(cols) > 1 else "0"
                 if text0:
                     data.append({"form": text0, "total": text1})
         print(f"📊 พบข้อมูล {len(data)} รายการ")
