@@ -43,7 +43,7 @@ def scrape_csi():
         driver.get(f"{LOGIN_URL}/dashboard/BHP?sitecode=BHP")
         print("✅ คลิก Dashboard แล้ว")
         time.sleep(3)
-        print(driver.execute_script(return document.body.innerHTML;")[:3000])
+        html = driver.execute_script(return document.body.innerHTML;")[:3000])
         
         wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, "#resultTable tbody tr")
