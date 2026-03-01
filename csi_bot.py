@@ -35,7 +35,7 @@ def scrape_csi():
         driver.find_element(By.ID, "login").click()
         time.sleep(5)
         print("URL หลัง login:", driver.current_url)
-        driver.get(f"{LOGIN_URL}/bhp/view-score")
+        print(driver.page_source)
         time.sleep(5)
         print("URL view-score:", driver.current_url)
         print(driver.page_source)
