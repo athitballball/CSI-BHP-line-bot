@@ -44,6 +44,12 @@ def scrape_csi():
         print("✅ คลิก Dashboard แล้ว")
         time.sleep(3)
 
+        print("📄 HTML ตาราง:")
+        tables = driver.find_elements(By.TAG_NAME, "table")
+        print(f"พบ {len(tables)} ตาราง")
+        for t in tables:
+            print(t.get_attribute("outerHTML")[:500])
+            
         rows = driver.find_elements(By.CSS_SELECTOR, "table tbody tr")
         today = datetime.now().strftime("%d/%b/%Y")
         data = []
