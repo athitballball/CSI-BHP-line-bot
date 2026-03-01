@@ -36,11 +36,8 @@ def scrape_csi():
         wait.until(EC.url_contains("FirstPage"))
         print("✅ Login สำเร็จ")
 
-        bhp_link = wait.until(EC.element_to_be_clickable(
-            (By.XPATH, "//a[@href[contains(.,'FirstPage') and contains(.,'BHP')]]")
-        ))
-        bhp_link.click()
-        print("✅ เลือก BHP แล้ว")
+        driver.get(f"{LOGIN_URL}/Home/FirstPage/87?userId=87&type=A&mail=***&site=1003&login_type=Y&user_part=N#")
+        print("✅ เข้าหน้า BHP แล้ว")
         time.sleep(2)
 
         driver.get(f"{LOGIN_URL}/Home/viewscore/BHP")
