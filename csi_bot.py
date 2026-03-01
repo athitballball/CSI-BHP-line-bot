@@ -38,6 +38,7 @@ def scrape_csi():
         driver.get(f"{LOGIN_URL}/bhp/view-score")
         time.sleep(5)
         print("URL view-score:", driver.current_url)
+        print(driver.page_source)
         print("จำนวน rows:", len(driver.find_elements(By.CSS_SELECTOR, "table tbody tr")))
         today = datetime.now().strftime("%d/%b/%Y")
         rows = driver.find_elements(By.CSS_SELECTOR, "table tbody tr")
