@@ -36,15 +36,12 @@ def scrape_csi():
         wait.until(EC.url_contains("FirstPage"))
         print("✅ Login สำเร็จ")
 
-        # คลิก BHP
-        bhp_link = wait.until(EC.element_to_be_clickable(
-            (By.XPATH, "//a[contains(text(),'BHP') or contains(@href,'BHP')]")
-        ))
-        bhp_link.click()
-        print("✅ เลือก BHP แล้ว")
-        time.sleep(2)
+        time.sleep(3)
+        all_links = driver.find_elements(By.TAG_NAME, "a")
+        print("🔍 ลิงก์ทั้งหมดในหน้า:")
+        for link in all_links:
+        print(f"  text={link.text!r}, href={link.get_attribute('href')!r}")
 
-        # คลิก View Score
         viewscore_link = wait.until(EC.element_to_be_clickable(
             (By.XPATH, "//a[contains(text(),'View Score') or contains(@href,'viewscore')]")
         ))
@@ -52,7 +49,6 @@ def scrape_csi():
         print("✅ เลือก View Score แล้ว")
         time.sleep(2)
 
-        # คลิก Dashboard
         dashboard_btn = wait.until(EC.element_to_be_clickable(
             (By.ID, "btnDashboard")
         ))
@@ -60,7 +56,6 @@ def scrape_csi():
         print("✅ คลิก Dashboard แล้ว")
         time.sleep(3)
 
-        # ดึงข้อมูล
         rows = driver.find_elements(By.CSS_SELECTOR, "table tbody tr")
         today = datetime.now().strftime("%d/%b/%Y")
         data = []
