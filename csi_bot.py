@@ -44,6 +44,11 @@ def scrape_csi():
         print("✅ คลิก Dashboard แล้ว")
         time.sleep(3)
 
+        wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, "#resultTable tbody tr")
+        ))
+        time.sleep(2)
+        
         rows = driver.find_elements(By.CSS_SELECTOR, "#resultTable tbody tr")
         today = datetime.now().strftime("%d/%b/%Y")
         data = []
