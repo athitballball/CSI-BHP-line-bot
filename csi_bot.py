@@ -18,8 +18,8 @@ def scrape_csi():
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     
-    from selenium.webdriver.chrome.service impport Service
-    from webdriver_manager.chrome import ChromeDrivermanager
+    from selenium.webdriver.chrome.service import Service
+    from webdriver_manager.chrome import ChromeDriverManager
 
     driver = webdriver.Chrome(
         service=Service(ChromeDriverManager().install()), 
