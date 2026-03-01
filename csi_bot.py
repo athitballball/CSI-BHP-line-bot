@@ -1,9 +1,11 @@
 import requests
 import os
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime
 import time
 
@@ -17,15 +19,16 @@ def scrape_csi():
     options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    
-    from selenium.webdriver.chrome.service import Service
-    from webdriver_manager.chrome import ChromeDriverManager
+
+    chrome_path = os.environ.get("CHROME_PATH")
+    if chrome_path:
+        options.binary_location = chrome_path
 
     driver = webdriver.Chrome(
-        service=Service(ChromeDriverManager().install()), 
+        service=Service(ChromeDriverManager().install()),
         options=options
     )
-    
+
     try:
         driver.get(LOGIN_URL)
         wait = WebDriverWait(driver, 10)
@@ -69,6 +72,9 @@ def format_message(date, data):
     return "\n".join(lines)
 
 today, data = scrape_csi()
-message = format_message(today, data)
-send_line(message)
-print("✅ ส่งสำเร็จ")
+if not data:
+    print("⚠️ ไม่พบข้อมูลวันนี้")
+else:
+    message = format_message(today, data)
+    send_line(message)
+    print("✅ ส่งสำเร็จ")
