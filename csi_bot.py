@@ -28,9 +28,8 @@ def scrape_csi():
     )
 
     try:
-        wait = WebDriverWait(driver, 20)
+        wait = WebDriverWait(driver, 30)
 
-        # ── 1) Login ──────────────────────────────────────────────
         driver.get(LOGIN_URL)
         wait.until(EC.presence_of_element_located((By.NAME, "username")))
         driver.find_element(By.NAME, "username").send_keys(USERNAME)
@@ -39,78 +38,48 @@ def scrape_csi():
         wait.until(EC.url_contains("FirstPage"))
         print("✅ Login สำเร็จ:", driver.current_url)
 
-        # ── 2) ไปหน้า viewscore ───────────────────────────────────
         driver.get(f"{LOGIN_URL}/Home/viewscore/{SITE_CODE}")
-        wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-        time.sleep(3)
+        wait.until(EC.presence_of_element_located((By.ID, "btnDashboard")))
+        time.sleep(2)
         print("📄 อยู่ที่:", driver.current_url)
 
-        # ── 3) DEBUG: print ปุ่มทั้งหมดในหน้า ────────────────────
-        all_btns = driver.find_elements(
-            By.XPATH,
-            "//button | //a[contains(@class,'btn')] | //input[@type='button'] | //input[@type='submit']"
-        )
-        print(f"🔍 พบปุ่ม {len(all_btns)} ปุ่ม:")
-        for b in all_btns:
-            print(f"  tag={b.tag_name} | id={b.get_attribute('id')!r} | "
-                  f"class={b.get_attribute('class')!r} | text={b.text.strip()[:40]!r}")
+        btn = driver.find_element(By.ID, "btnDashboard")
+        driver.execute_script("arguments[0].click();", btn)
+        print("🖱️ คลิก Dashboard แล้ว — รอข้อมูลโหลด...")
 
-        # ── 4) คลิกปุ่ม Dashboard ─────────────────────────────────
-        dashboard_btn = None
-        selectors = [
-            (By.XPATH, "//*[contains(translate(text(),'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ'),'DASHBOARD') and (self::button or self::a or self::input)]"),
-            (By.XPATH, "//*[contains(@id,'ashboard') or contains(@id,'ASHBOARD')]"),
-            (By.XPATH, "//*[contains(@onclick,'ashboard')]"),
-            (By.XPATH, "//*[contains(@class,'ashboard')]"),
-        ]
+        def table_has_data(d):
+            rows = d.find_elements(By.CSS_SELECTOR, "#resultTable tbody tr")
+            for r in rows:
+                cells = r.find_elements(By.TAG_NAME, "td")
+                if cells and cells[0].get_attribute("innerHTML").strip():
+                    text = cells[0].get_attribute("innerText").strip()
+                    if text and "No data" not in text:
+                        return True
+            return False
 
-        for by, sel in selectors:
-            try:
-                elems = driver.find_elements(by, sel)
-                if elems:
-                    dashboard_btn = elems[0]
-                    print(f"🔘 พบ Dashboard ด้วย: {sel}")
-                    break
-            except Exception:
-                continue
+        try:
+            wait.until(table_has_data)
+            print("✅ ตารางโหลดข้อมูลแล้ว")
+        except Exception:
+            print("⚠️ timeout รอตาราง — ลองดึงข้อมูลที่มี")
 
-        if dashboard_btn:
-            driver.execute_script("arguments[0].click();", dashboard_btn)
-            print("🖱️ คลิก Dashboard แล้ว")
-            time.sleep(4)
-        else:
-            print("⚠️ ไม่พบปุ่ม Dashboard — ลองดึงข้อมูลจากตารางที่มีอยู่เลย")
+        time.sleep(1)
 
-        # ── 5) print HTML ส่วนแรกเพื่อ debug ─────────────────────
-        body_html = driver.execute_script("return document.body.innerHTML;")
-        print("📝 HTML (500 chars):", body_html[:500])
-
-        # ── 6) ดึงข้อมูลจากตาราง ──────────────────────────────────
-        table_selectors = [
-            "#resultTable tbody tr",
-            "table#dataTable tbody tr",
-            "table tbody tr",
-        ]
-
-        rows = []
-        for sel in table_selectors:
-            rows = [
-                r for r in driver.find_elements(By.CSS_SELECTOR, sel)
-                if "dataTables_empty" not in r.get_attribute("innerHTML")
-            ]
-            if rows:
-                print(f"✅ ใช้ selector: {sel} | พบ {len(rows)} rows")
-                break
+        rows = driver.find_elements(By.CSS_SELECTOR, "#resultTable tbody tr")
+        print(f"📋 จำนวน rows ทั้งหมด: {len(rows)}")
 
         today = datetime.now().strftime("%d/%b/%Y")
         data = []
-        for row in rows:
-            cols = row.find_elements(By.TAG_NAME, "td")
-            if len(cols) >= 2:
-                text0 = cols[0].text.strip()
-                text1 = cols[1].text.strip()
-                if text0:
-                    data.append({"form": text0, "total": text1})
+        for i, row in enumerate(rows):
+            cells = row.find_elements(By.TAG_NAME, "td")
+            # ใช้ innerText แทน .text เพื่อให้ได้ค่าที่ render แล้ว
+            texts = [
+                driver.execute_script("return arguments[0].innerText;", c).strip()
+                for c in cells
+            ]
+            print(f"  row[{i}]: {texts}")
+            if len(texts) >= 2 and texts[0] and "No data" not in texts[0]:
+                data.append({"form": texts[0], "total": texts[1]})
 
         print(f"📊 พบข้อมูล {len(data)} รายการ")
         return today, data
@@ -147,7 +116,6 @@ def format_message(date, data):
     return "\n".join(lines)
 
 
-# ── Main ──────────────────────────────────────────────────────────
 today, data = scrape_csi()
 
 if not data:
