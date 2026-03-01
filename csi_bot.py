@@ -17,7 +17,7 @@ def scrape_csi():
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
-        options.binary_location = "/usr/bin/chromium"
+        options.binary_location = "/usr/bin/google-chrome"
 
 from selenium.webdriver.chrome.service import Service
 service = Service("/usr/bin/chromedriver")
