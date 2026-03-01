@@ -44,21 +44,15 @@ def scrape_csi():
         print("✅ คลิก Dashboard แล้ว")
         time.sleep(3)
 
-        print("📄 HTML ตาราง:")
-        tables = driver.find_elements(By.TAG_NAME, "table")
-        print(f"พบ {len(tables)} ตาราง")
-        for t in tables:
-            print(t.get_attribute("outerHTML")[:500])
-            
         rows = driver.find_elements(By.CSS_SELECTOR, "table tbody tr")
         today = datetime.now().strftime("%d/%b/%Y")
         data = []
         for row in rows:
             cols = row.find_elements(By.TAG_NAME, "td")
-            if len(cols) >= 1:
+            if len(cols) >= 2:
                 text0 = cols[0].text.strip()
-                text1 = cols[1].text.strip() if len(cols) > 1 else "0"
-                if text0:
+                text1 = cols[1].text.strip()
+                if text0 and text0 != "Form Name":
                     data.append({"form": text0, "total": text1})
         print(f"📊 พบข้อมูล {len(data)} รายการ")
         return today, data
