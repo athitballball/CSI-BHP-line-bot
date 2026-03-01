@@ -40,7 +40,7 @@ def scrape_csi():
         all_links = driver.find_elements(By.TAG_NAME, "a")
         print("🔍 ลิงก์ทั้งหมดในหน้า:")
         for link in all_links:
-        print(f"  text={link.text!r}, href={link.get_attribute('href')!r}")
+            print(f"  text={link.text!r}, href={link.get_attribute('href')!r}")
 
         viewscore_link = wait.until(EC.element_to_be_clickable(
             (By.XPATH, "//a[contains(text(),'View Score') or contains(@href,'viewscore')]")
