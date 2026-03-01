@@ -94,7 +94,7 @@ def format_message(date, data):
     lines = [
         f"\n📊 CSI Daily Report",
         f"📅 {date}",
-        f"🏥 Site: {SITE_CODE}",
+        f"🏥 Site: BHP",
         "─" * 25,
     ]
     for item in data:
