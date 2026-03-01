@@ -13,11 +13,16 @@ LINE_TOKEN = os.environ["LINE_TOKEN"]
 LOGIN_URL  = "https://csi-bdms-mgrs.azurewebsites.net"
 
 def scrape_csi():
-    options = webdriver.ChromeOptions()
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    driver = webdriver.Chrome(options=options)
+        options = webdriver.ChromeOptions()
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.binary_location = "/usr/bin/chromium"
+
+from selenium.webdriver.chrome.service import Service
+service = Service("/usr/bin/chromedriver")
+
+driver = webdriver.Chrome(service=service, options=options)
     try:
         driver.get(LOGIN_URL)
         wait = WebDriverWait(driver, 10)
