@@ -46,10 +46,19 @@ def scrape_csi():
         wait.until(EC.url_contains("FirstPage"))
         print("✅ Login สำเร็จ:", driver.current_url)
 
-        viewscore_url = f"{LOGIN_URL}/Home/viewscore/{SITE_CODE}"
-        driver.get(viewscore_url)
-        print("📄 เข้าหน้า viewscore:", driver.current_url)
+        bhp_link = wait.until(EC.element_to_be_clickable(
+        (By.XPATH, "//a[contains(text(),'BHP') or contains(@href,'BHP')]")
+        ))
+        bhp_link.click()
+        print("✅ เลือก BHP แล้ว")
+        time.sleep(2)
 
+        viewscore_link = wait.until(EC.element_to_be_clickable(
+        (By.XPATH, "//a[contains(text(),'View Score') or contains(@href,'viewscore')]")
+        ))
+        viewscore_link.click()
+        print("✅ เลือก View Score แล้ว")
+        time.sleep(2)
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
         time.sleep(2)
 
@@ -125,7 +134,7 @@ def format_message(date, data):
     lines = [
         f"\n📊 CSI Daily Report",
         f"📅 {date}",
-        f"🏥 Site: {SITE_CODE}",
+        f"🏥 Site: BHP",
         "─" * 25,
     ]
     for item in data:
