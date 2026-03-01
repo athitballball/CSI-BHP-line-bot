@@ -24,6 +24,7 @@ def scrape_csi():
     driver = webdriver.Chrome(
         service=Service(ChromeDriverManager().install()), 
         options=options
+    )
     try:
         driver.get(LOGIN_URL)
         wait = WebDriverWait(driver, 10)
