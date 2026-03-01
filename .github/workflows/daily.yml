@@ -1,0 +1,33 @@
+name: CSI Daily Report
+
+on:
+  schedule:
+    - cron: '0 5 * * *'  # 12:00 น. เวลาไทย
+  workflow_dispatch:
+
+jobs:
+  send-report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests selenium
+
+      - name: Install Chrome
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser chromium-chromedriver
+
+      - name: Run CSI Bot
+        env:
+          CSI_USERNAME: ${{ secrets.CSI_USERNAME }}
+          CSI_PASSWORD: ${{ secrets.CSI_PASSWORD }}
+          LINE_TOKEN:   ${{ secrets.LINE_TOKEN }}
+          LINE_GROUP_ID: ${{ secrets.LINE_GROUP_ID }}
+        run: python csi_bot.py
