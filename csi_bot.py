@@ -32,7 +32,7 @@ def scrape_csi():
         wait.until(EC.presence_of_element_located((By.NAME, "username")))
         driver.find_element(By.NAME, "username").send_keys(USERNAME)
         driver.find_element(By.NAME, "password").send_keys(PASSWORD)
-        print(driver.page_source)
+        driver.find_element(By.ID, "login").click()
         time.sleep(3)
         driver.get(f"{LOGIN_URL}/bhp/view-score")
         time.sleep(2)
