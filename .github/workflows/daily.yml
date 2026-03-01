@@ -19,10 +19,13 @@ jobs:
       - name: Install dependencies
         run: pip install requests selenium
 
-      - name: Install Chrome
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y chromium-browser chromium-chromedriver
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      - name: Install webdriver-manager
+        run: pip install webdriver-manager
 
       - name: Run CSI Bot
         env:
