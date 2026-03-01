@@ -14,10 +14,10 @@ LOGIN_URL  = "https://csi-bdms-mgrs.azurewebsites.net"
 
 def scrape_csi():
         options = webdriver.ChromeOptions()
-        options.add_argument("--headless")
+        options.add_argument("--headless=new")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
-        options.binary_location = "/usr/bin/google-chrome"
+        options.binary_location = "/usr/bin/chromium-browser"
 
 from selenium.webdriver.chrome.service import Service
 service = Service("/usr/bin/chromedriver")
