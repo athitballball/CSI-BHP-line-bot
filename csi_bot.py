@@ -78,8 +78,8 @@ def scrape_csi():
                 for c in cells
             ]
             print(f"  row[{i}]: {texts}")
-            if len(texts) >= 2 and texts[0] and "No data" not in texts[0]:
-                data.append({"form": texts[0], "total": texts[1]})
+            if len(texts) >= 3 and texts[1] and "No data" not in texts[1]:
+                data.append({"form": texts[1], "total": texts[2]})
 
         print(f"📊 พบข้อมูล {len(data)} รายการ")
         return today, data
