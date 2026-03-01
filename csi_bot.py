@@ -17,12 +17,8 @@ def scrape_csi():
         options.add_argument("--headless=new")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
-        options.binary_location = "/usr/bin/chromium-browser"
-
-from selenium.webdriver.chrome.service import Service
-service = Service("/usr/bin/chromedriver")
-
-driver = webdriver.Chrome(service=service, options=options)
+        
+driver = webdriver.Chrome(options=options)
     try:
         driver.get(LOGIN_URL)
         wait = WebDriverWait(driver, 10)
