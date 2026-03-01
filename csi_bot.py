@@ -36,17 +36,15 @@ def scrape_csi():
         wait.until(EC.url_contains("FirstPage"))
         print("✅ Login สำเร็จ")
 
-        time.sleep(3)
-        all_links = driver.find_elements(By.TAG_NAME, "a")
-        print("🔍 ลิงก์ทั้งหมดในหน้า:")
-        for link in all_links:
-            print(f"  text={link.text!r}, href={link.get_attribute('href')!r}")
-
-        viewscore_link = wait.until(EC.element_to_be_clickable(
-            (By.XPATH, "//a[contains(text(),'View Score') or contains(@href,'viewscore')]")
+        bhp_link = wait.until(EC.element_to_be_clickable(
+            (By.XPATH, "//a[@href[contains(.,'FirstPage') and contains(.,'BHP')]]")
         ))
-        viewscore_link.click()
-        print("✅ เลือก View Score แล้ว")
+        bhp_link.click()
+        print("✅ เลือก BHP แล้ว")
+        time.sleep(2)
+
+        driver.get(f"{LOGIN_URL}/Home/viewscore/BHP")
+        print("✅ เข้าหน้า viewscore แล้ว")
         time.sleep(2)
 
         dashboard_btn = wait.until(EC.element_to_be_clickable(
