@@ -9,97 +9,59 @@ from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime
 import time
 
-USERNAME   = os.environ["CSI_USERNAME"]
-PASSWORD   = os.environ["CSI_PASSWORD"]
-LINE_TOKEN = os.environ["LINE_TOKEN"]
+USERNAME      = os.environ["CSI_USERNAME"]
+PASSWORD      = os.environ["CSI_PASSWORD"]
+LINE_TOKEN    = os.environ["LINE_TOKEN"]
 LINE_GROUP_ID = os.environ["LINE_GROUP_ID"]
-
-LOGIN_URL  = "https://csi-bdms-mgrs.azurewebsites.net"
-
-
-SITE_CODE  = os.environ.get("SITE_CODE", "BHP")
-
+LOGIN_URL     = "https://csi-bdms-mgrs.azurewebsites.net"
+SITE_CODE     = os.environ.get("SITE_CODE", "BHP")
 
 def scrape_csi():
     options = webdriver.ChromeOptions()
     options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-
-    chrome_path = os.environ.get("CHROME_PATH")
-    if chrome_path:
-        options.binary_location = chrome_path
-
     driver = webdriver.Chrome(
         service=Service(ChromeDriverManager().install()), options=options
     )
-
     try:
         wait = WebDriverWait(driver, 20)
 
+        # Login
         driver.get(LOGIN_URL)
         wait.until(EC.presence_of_element_located((By.NAME, "username")))
         driver.find_element(By.NAME, "username").send_keys(USERNAME)
         driver.find_element(By.NAME, "password").send_keys(PASSWORD)
         driver.find_element(By.ID, "login").click()
-
         wait.until(EC.url_contains("FirstPage"))
-        print("✅ Login สำเร็จ:", driver.current_url)
+        print("✅ Login สำเร็จ")
 
+        # คลิก BHP
         bhp_link = wait.until(EC.element_to_be_clickable(
-        (By.XPATH, "//a[contains(text(),'BHP') or contains(@href,'BHP')]")
+            (By.XPATH, "//a[contains(text(),'BHP') or contains(@href,'BHP')]")
         ))
         bhp_link.click()
         print("✅ เลือก BHP แล้ว")
         time.sleep(2)
 
+        # คลิก View Score
         viewscore_link = wait.until(EC.element_to_be_clickable(
-        (By.XPATH, "//a[contains(text(),'View Score') or contains(@href,'viewscore')]")
+            (By.XPATH, "//a[contains(text(),'View Score') or contains(@href,'viewscore')]")
         ))
         viewscore_link.click()
         print("✅ เลือก View Score แล้ว")
         time.sleep(2)
-        wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-        time.sleep(2)
 
-        dashboard_btn = None
-        selectors = [
-            (By.ID, "btnDashboard"),
-            (By.XPATH, "//button[contains(translate(text(),'dashboard','DASHBOARD'),'DASHBOARD')]"),
-            (By.XPATH, "//a[contains(translate(text(),'dashboard','DASHBOARD'),'DASHBOARD')]"),
-            (By.XPATH, "//button[contains(@onclick,'dashboard') or contains(@id,'dashboard') or contains(@class,'dashboard')]"),
-            (By.XPATH, "//input[@type='button' and contains(translate(@value,'dashboard','DASHBOARD'),'DASHBOARD')]"),
-        ]
-
-        for by, selector in selectors:
-            try:
-                dashboard_btn = wait.until(EC.element_to_be_clickable((by, selector)))
-                print(f"🔘 พบปุ่ม Dashboard ด้วย selector: {selector}")
-                break
-            except Exception:
-                continue
-
-        if dashboard_btn is None:
-            buttons = driver.find_elements(By.XPATH, "//button | //a[contains(@class,'btn')] | //input[@type='button']")
-            print("⚠️ ไม่พบปุ่ม Dashboard — ปุ่มที่มีในหน้า:")
-            for b in buttons:
-                print(f"  tag={b.tag_name}, id={b.get_attribute('id')}, text={b.text[:50]!r}")
-            raise RuntimeError("ไม่พบปุ่ม Dashboard")
-
+        # คลิก Dashboard
+        dashboard_btn = wait.until(EC.element_to_be_clickable(
+            (By.ID, "btnDashboard")
+        ))
         dashboard_btn.click()
-        print("🖱️ คลิกปุ่ม Dashboard แล้ว")
+        print("✅ คลิก Dashboard แล้ว")
+        time.sleep(3)
 
-        wait.until(
-            lambda d: len([
-                r for r in d.find_elements(By.CSS_SELECTOR, "table tbody tr")
-                if "dataTables_empty" not in r.get_attribute("innerHTML")
-            ]) > 0
-        )
-        time.sleep(1)  # buffer เล็กน้อย
-
+        # ดึงข้อมูล
         rows = driver.find_elements(By.CSS_SELECTOR, "table tbody tr")
-        print(f"📊 จำนวน rows: {len(rows)}")
-
         today = datetime.now().strftime("%d/%b/%Y")
         data = []
         for row in rows:
@@ -107,14 +69,13 @@ def scrape_csi():
             if len(cols) >= 2:
                 text0 = cols[0].text.strip()
                 text1 = cols[1].text.strip()
-                if text0 and "dataTables_empty" not in row.get_attribute("class"):
+                if text0:
                     data.append({"form": text0, "total": text1})
-
+        print(f"📊 พบข้อมูล {len(data)} รายการ")
         return today, data
 
     finally:
         driver.quit()
-
 
 def send_line(message):
     requests.post(
@@ -129,12 +90,11 @@ def send_line(message):
         }
     )
 
-
 def format_message(date, data):
     lines = [
         f"\n📊 CSI Daily Report",
         f"📅 {date}",
-        f"🏥 Site: BHP",
+        f"🏥 Site: {SITE_CODE}",
         "─" * 25,
     ]
     for item in data:
@@ -143,10 +103,7 @@ def format_message(date, data):
     lines.append("🏥 Bangkok Hospital Pakchong")
     return "\n".join(lines)
 
-
-# ── Main ──────────────────────────────────────────────────────────
 today, data = scrape_csi()
-
 if not data:
     print("⚠️ ไม่พบข้อมูลวันนี้")
 else:
