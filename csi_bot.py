@@ -24,10 +24,7 @@ def scrape_csi():
     if chrome_path:
         options.binary_location = chrome_path
 
-    driver = webdriver.Chrome(
-        service=Service(ChromeDriverManager().install()),
-        options=options
-    )
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     try:
         driver.get(LOGIN_URL)
