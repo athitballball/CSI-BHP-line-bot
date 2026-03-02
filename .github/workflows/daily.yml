@@ -1,7 +1,8 @@
 name: CSI Daily Report
+# force schedule
 on:
   schedule:
-    - cron: '30 6 * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
