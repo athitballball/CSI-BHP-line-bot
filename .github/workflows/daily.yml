@@ -28,3 +28,4 @@ jobs:
           LINE_TOKEN:   ${{ secrets.LINE_TOKEN }}
           LINE_GROUP_ID: ${{ secrets.LINE_GROUP_ID }}
         run: python csi_bot.py
+
