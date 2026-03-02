@@ -3,8 +3,10 @@ name: CSI Daily Report
 # force schedule
 on:
   push:
+    branches: 
+      - main
   schedule:
-    - cron: '30 9 * * *' 
+    - cron: '40 8 * * *' 
   workflow_dispatch:
 
 jobs:
