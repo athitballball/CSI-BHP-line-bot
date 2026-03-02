@@ -38,10 +38,16 @@ def scrape_csi():
         wait.until(EC.url_contains("FirstPage"))
         print("✅ Login สำเร็จ:", driver.current_url)
 
-        driver.get(f"{LOGIN_URL}/Home/viewscore/{SITE_CODE}")
-        wait.until(EC.presence_of_element_located((By.ID, "btnDashboard")))
+        driver.get(f"{LOGIN_URL}/Home/viewscore/BHP")
+        print("✅ เข้าหน้า viewscore แล้ว")
         time.sleep(2)
-        print("📄 อยู่ที่:", driver.current_url)
+      
+        dashboard_btn = wait.until(EC.element_to_be_clickable(
+        (By.ID, "btnDashboard")
+        ))
+        dashboard_btn.click()
+        print("✅ กด Dashboard แล้ว")
+        time.sleep(3)
 
         btn = driver.find_element(By.ID, "btnDashboard")
         driver.execute_script("arguments[0].click();", btn)
