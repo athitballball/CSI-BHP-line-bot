@@ -153,7 +153,5 @@ if filepath:
     sheet_url = upload_to_sheets(filepath)
     today = datetime.now().strftime("%d/%b/%Y")
     message = f"\n📊 CSI Export BHP\n📅 {today}\n✅ อัพเดต Google Sheet แล้ว\n🔗 {sheet_url}"
-    send_line(message)
-    print("✅ ส่ง LINE สำเร็จ")
 else:
     print("⚠️ ไม่พบไฟล์")
