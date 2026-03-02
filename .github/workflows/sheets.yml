@@ -1,0 +1,32 @@
+name: CSI Sheets Export
+
+on:
+  schedule:
+    - cron: '30 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  export-sheets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Chrome
+        run: sudo apt-get install -y google-chrome-stable
+
+      - name: Install dependencies
+        run: pip install requests selenium webdriver-manager gspread google-auth openpyxl
+
+      - name: Run Sheets Bot
+        env:
+          CSI_USERNAME: ${{ secrets.CSI_USERNAME }}
+          CSI_PASSWORD: ${{ secrets.CSI_PASSWORD }}
+          LINE_TOKEN:   ${{ secrets.LINE_TOKEN }}
+          LINE_GROUP_ID: ${{ secrets.LINE_GROUP_ID }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        run: python sheets_bot.py
