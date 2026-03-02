@@ -4,8 +4,8 @@ name: CSI Daily Report
 on:
   push:
   schedule:
-    - cron: '*/5 * * * *'
-    workflow_dispatch:
+    - cron: '*/5 * * * *' 
+  workflow_dispatch:
 
 jobs:
   send-report:
