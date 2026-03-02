@@ -132,20 +132,7 @@ def upload_to_sheets(filepath):
         print(f"✅ อัพเดต Sheet: {sheet_name}")
 
     sheet_url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}"
-    return sheet_url
-
-def send_line(message):
-    requests.post(
-        "https://api.line.me/v2/bot/message/push",
-        headers={
-            "Authorization": f"Bearer {LINE_TOKEN}",
-            "Content-Type": "application/json"
-        },
-        json={
-            "to": LINE_GROUP_ID,
-            "messages": [{"type": "text", "text": message}]
-        }
-    )
+    return
 
 # Main
 filepath = export_excel()
