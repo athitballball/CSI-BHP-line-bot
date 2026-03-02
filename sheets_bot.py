@@ -81,7 +81,7 @@ def export_excel():
 
         # กด Export Data
         export_btn = wait.until(EC.element_to_be_clickable(
-            (By.XPATH, "//button[contains(text(),'Export')] | //input[@value='Export Data']")
+        (By.CLASS_NAME, "btn-success")
         ))
         export_btn.click()
         print("✅ กด Export แล้ว")
