@@ -1,10 +1,11 @@
+# test2
 name: CSI Daily Report
 # force schedule
 on:
   push:
   schedule:
     - cron: '*/5 * * * *'
-  workflow_dispatch:
+    workflow_dispatch:
 
 jobs:
   send-report:
