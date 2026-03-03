@@ -69,6 +69,10 @@ def export_excel():
         end_input.send_keys(end_date)
         print(f"✅ Set วันสิ้นสุด: {end_date}")
 
+        # ปิด date picker
+        driver.execute_script("document.body.click();")
+        time.sleep(1)
+
         # เลือก Site = BHP
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "select")))
         Select(driver.find_element(By.TAG_NAME, "select")).select_by_visible_text("BHP")
@@ -96,8 +100,13 @@ def export_excel():
                     print(f"⚠️ ติ๊กไม่ได้: {text} → {e}")
         time.sleep(1)
 
-        # กด Export
-        wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "btn-success"))).click()
+        # ปิด date picker ก่อนกด Export
+        driver.execute_script("document.body.click();")
+        time.sleep(1)
+
+        # กด Export ด้วย JavaScript
+        export_btn = wait.until(EC.presence_of_element_located((By.ID, "exportBtn")))
+        driver.execute_script("arguments[0].click();", export_btn)
         print("✅ กด Export แล้ว")
         time.sleep(5)
 
