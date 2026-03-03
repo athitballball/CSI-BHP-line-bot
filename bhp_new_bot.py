@@ -56,17 +56,20 @@ def export_excel():
         print("✅ เข้าหน้า Export แล้ว")
 
         # Set วันที่เริ่มต้น
-        start_input = wait.until(EC.presence_of_element_located((By.ID, "startDate")))
+        inputs = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "input[type='text']")))
+        start_input = inputs[0]
         driver.execute_script("arguments[0].value = '';", start_input)
         start_input.send_keys(START_DATE)
         print(f"✅ Set วันเริ่มต้น: {START_DATE}")
 
         # Set วันที่สิ้นสุด = วันนี้
         end_date = datetime.now().strftime("%d/%b/%Y")
-        end_input = driver.find_element(By.ID, "endDate")
+        end_input = inputs[1]
         driver.execute_script("arguments[0].value = '';", end_input)
         end_input.send_keys(end_date)
         print(f"✅ Set วันสิ้นสุด: {end_date}")
+
+
 
         # เลือก Site = BHP
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "select")))
