@@ -2,7 +2,7 @@ name: BHP New Export
 
 on:
   schedule:
-    - cron: '0 5 * * *'   # 12:00 น. เวลาไทย (UTC+7)
+    - cron: '0 5 * * *'
   workflow_dispatch:
 
 jobs:
@@ -17,12 +17,10 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: |
-          pip install selenium webdriver-manager gspread google-auth openpyxl
+        run: pip install selenium webdriver-manager gspread google-auth openpyxl
 
       - name: Install Chrome
-        run: |
-          sudo apt-get install -y google-chrome-stable
+        run: sudo apt-get install -y google-chrome-stable
 
       - name: Run bot
         env:
@@ -30,3 +28,10 @@ jobs:
           CSI_PASSWORD: ${{ secrets.CSI_PASSWORD }}
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
         run: python bhp_new_bot.py
+
+      - name: Upload screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshot
+          path: /tmp/screenshot.png
