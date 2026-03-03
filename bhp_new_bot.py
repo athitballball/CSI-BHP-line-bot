@@ -58,15 +58,15 @@ def export_excel():
         # Set วันที่เริ่มต้น
         inputs = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "input[type='text']")))
         start_input = inputs[0]
-        driver.execute_script("arguments[0].value = '';", start_input)
-        start_input.send_keys(START_DATE)
+        driver.execute_script("arguments[0].value = arguments[1];", start_input, START_DATE)
+        driver.execute_script("arguments[0].dispatchEvent(new Event('change'));", start_input)
         print(f"✅ Set วันเริ่มต้น: {START_DATE}")
 
         # Set วันที่สิ้นสุด = วันนี้
         end_date = datetime.now().strftime("%d/%b/%Y")
         end_input = inputs[1]
-        driver.execute_script("arguments[0].value = '';", end_input)
-        end_input.send_keys(end_date)
+        driver.execute_script("arguments[0].value = arguments[1];", end_input, end_date)
+        driver.execute_script("arguments[0].dispatchEvent(new Event('change'));", end_input)
         print(f"✅ Set วันสิ้นสุด: {end_date}")
 
         # ปิด date picker
@@ -82,10 +82,8 @@ def export_excel():
         # ติ๊ก checkbox ที่มีตัวเลขในวงเล็บ
         time.sleep(3)
         labels = driver.find_elements(By.CSS_SELECTOR, "label")
-        print(f"พบ label ทั้งหมด {len(labels)} อัน")
         for label in labels:
             text = label.text.strip()
-            print(f"  label: '{text}'")
             if "(" in text and ")" in text:
                 try:
                     checkbox_id = label.get_attribute("for")
