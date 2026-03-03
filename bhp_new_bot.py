@@ -78,17 +78,27 @@ def export_excel():
         time.sleep(2)
 
         # ติ๊ก checkbox ที่มีตัวเลขในวงเล็บ
-        for label in driver.find_elements(By.CSS_SELECTOR, "label"):
+        time.sleep(3)  # รอให้ checkbox โหลดครบ
+        labels = driver.find_elements(By.CSS_SELECTOR, "label")
+        print(f"พบ label ทั้งหมด {len(labels)} อัน")
+        for label in labels:
             text = label.text.strip()
+            print(f"  label: '{text}'")
             if "(" in text and ")" in text:
-                try:
-                    checkbox = driver.find_element(By.ID, label.get_attribute("for"))
+                 try:
+                    checkbox_id = label.get_attribute("for")
+                    if checkbox_id:
+                        checkbox = driver.find_element(By.ID, checkbox_id)
+                    else:
+                        # ถ้าไม่มี for ให้หา input ใน label
+                        checkbox = label.find_element(By.TAG_NAME, "input")
                     if not checkbox.is_selected():
-                        checkbox.click()
+                        driver.execute_script("arguments[0].click();", checkbox)
                     print(f"✅ ติ๊ก {text}")
-                except:
-                    pass
+                except Exception as e:
+                    print(f"⚠️ ติ๊กไม่ได้: {text} → {e}")
         time.sleep(1)
+
 
         # กด Export
         wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "btn-success"))).click()
