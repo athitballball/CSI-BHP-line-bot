@@ -59,8 +59,8 @@ def export_excel():
         # Set วันที่เริ่มต้น
         inputs = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "input[type='text']")))
         start_input = inputs[0]
-        start_input.click()
-        time.sleep(1)
+        driver.execute_script("arguments[0].click();", start_input)
+        time.sleep(2)
         driver.save_screenshot("/tmp/screenshot.png")
         print("✅ บันทึก screenshot แล้ว")
 
@@ -69,112 +69,8 @@ def export_excel():
         print(f"พบ td.available {len(day_cells)} อัน")
         for cell in day_cells:
             if cell.text.strip() == "1":
-                cell.click()
+                driver.execute_script("arguments[0].click();", cell)
                 print("✅ คลิกวันที่ 1 แล้ว")
                 break
         time.sleep(0.5)
-        apply_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".applyBtn")))
-        driver.execute_script("arguments[0].click();", apply_btn)
-        print(f"✅ Set วันเริ่มต้น: {START_DATE}")
-        time.sleep(1)
-
-        # Set วันที่สิ้นสุด = วันนี้
-        end_date = datetime.now().strftime("%d/%b/%Y")
-        today_day = str(datetime.now().day)
-        end_input = inputs[1]
-        end_input.click()
-        time.sleep(1)
-
-        # คลิกวันปัจจุบัน
-        day_cells = driver.find_elements(By.CSS_SELECTOR, "td.available:not(.off)")
-        for cell in day_cells:
-            if cell.text.strip() == today_day:
-                cell.click()
-                print(f"✅ คลิกวันที่ {today_day} แล้ว")
-                break
-        time.sleep(0.5)
-        apply_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".applyBtn")))
-        driver.execute_script("arguments[0].click();", apply_btn)
-        print(f"✅ Set วันสิ้นสุด: {end_date}")
-        time.sleep(1)
-
-        # เลือก Site = BHP
-        wait.until(EC.presence_of_element_located((By.TAG_NAME, "select")))
-        Select(driver.find_element(By.TAG_NAME, "select")).select_by_visible_text("BHP")
-        print("✅ เลือก BHP แล้ว")
-        time.sleep(2)
-
-        # ติ๊ก checkbox ที่มีตัวเลขในวงเล็บ
-        time.sleep(3)
-        labels = driver.find_elements(By.CSS_SELECTOR, "label")
-        for label in labels:
-            text = label.text.strip()
-            if "(" in text and ")" in text:
-                try:
-                    checkbox_id = label.get_attribute("for")
-                    if checkbox_id:
-                        checkbox = driver.find_element(By.ID, checkbox_id)
-                    else:
-                        checkbox = label.find_element(By.TAG_NAME, "input")
-                    if not checkbox.is_selected():
-                        driver.execute_script("arguments[0].click();", checkbox)
-                    print(f"✅ ติ๊ก {text}")
-                except Exception as e:
-                    print(f"⚠️ ติ๊กไม่ได้: {text} → {e}")
-        time.sleep(1)
-
-        # ปิด date picker ก่อนกด Export
-        driver.execute_script("document.body.click();")
-        time.sleep(1)
-
-        # กด Export ด้วย JavaScript
-        export_btn = wait.until(EC.presence_of_element_located((By.ID, "exportBtn")))
-        driver.execute_script("arguments[0].click();", export_btn)
-        print("✅ กด Export แล้ว")
-        time.sleep(5)
-
-        # หาไฟล์ที่ดาวน์โหลด
-        files = glob.glob(f"{download_dir}/*.xlsx") or glob.glob(f"{download_dir}/*")
-        if files:
-            filepath = max(files, key=os.path.getctime)
-            print(f"✅ ดาวน์โหลดสำเร็จ: {filepath}")
-            return filepath
-        else:
-            print("⚠️ ไม่พบไฟล์")
-            return None
-
-    finally:
-        driver.quit()
-
-def upload_to_sheets(filepath):
-    creds = Credentials.from_service_account_info(
-        json.loads(GOOGLE_CREDS),
-        scopes=["https://www.googleapis.com/auth/spreadsheets"]
-    )
-    gc = gspread.authorize(creds)
-    sh = gc.open_by_key(SHEET_ID)
-    wb = openpyxl.load_workbook(filepath)
-
-    for sheet_name in wb.sheetnames:
-        ws = wb[sheet_name]
-        data = [
-            [str(cell) if cell is not None else "" for cell in row]
-            for row in ws.iter_rows(values_only=True)
-        ]
-        try:
-            worksheet = sh.worksheet(sheet_name)
-            worksheet.clear()
-        except:
-            worksheet = sh.add_worksheet(title=sheet_name, rows=5000, cols=30)
-
-        worksheet.update(data)
-        print(f"✅ อัพเดต Sheet: {sheet_name}")
-
-    print(f"🔗 https://docs.google.com/spreadsheets/d/{SHEET_ID}")
-
-# Main
-filepath = export_excel()
-if filepath:
-    upload_to_sheets(filepath)
-else:
-    print("⚠️ Export ล้มเหลว")
+        apply_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".​​​​​​​​​​​​​​​​
