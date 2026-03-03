@@ -69,8 +69,6 @@ def export_excel():
         end_input.send_keys(end_date)
         print(f"✅ Set วันสิ้นสุด: {end_date}")
 
-
-
         # เลือก Site = BHP
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "select")))
         Select(driver.find_element(By.TAG_NAME, "select")).select_by_visible_text("BHP")
@@ -78,19 +76,18 @@ def export_excel():
         time.sleep(2)
 
         # ติ๊ก checkbox ที่มีตัวเลขในวงเล็บ
-        time.sleep(3)  # รอให้ checkbox โหลดครบ
+        time.sleep(3)
         labels = driver.find_elements(By.CSS_SELECTOR, "label")
         print(f"พบ label ทั้งหมด {len(labels)} อัน")
         for label in labels:
             text = label.text.strip()
             print(f"  label: '{text}'")
             if "(" in text and ")" in text:
-                 try:
+                try:
                     checkbox_id = label.get_attribute("for")
                     if checkbox_id:
                         checkbox = driver.find_element(By.ID, checkbox_id)
                     else:
-                        # ถ้าไม่มี for ให้หา input ใน label
                         checkbox = label.find_element(By.TAG_NAME, "input")
                     if not checkbox.is_selected():
                         driver.execute_script("arguments[0].click();", checkbox)
@@ -98,7 +95,6 @@ def export_excel():
                 except Exception as e:
                     print(f"⚠️ ติ๊กไม่ได้: {text} → {e}")
         time.sleep(1)
-
 
         # กด Export
         wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "btn-success"))).click()
