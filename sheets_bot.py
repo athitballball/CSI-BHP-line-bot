@@ -120,7 +120,8 @@ def upload_to_sheets(filepath):
         ws = wb[sheet_name]
         data = []
         for row in ws.iter_rows(values_only=True):
-            data.append(list(row))
+    data.append([str(cell) if cell is not None else "" for cell in row])
+
         
         try:
             worksheet = sh.worksheet(sheet_name)
