@@ -12,12 +12,11 @@ from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime
 import gspread
 from google.oauth2.service_account import Credentials
+import openpyxl
 import time
 
 USERNAME      = os.environ["CSI_USERNAME"]
 PASSWORD      = os.environ["CSI_PASSWORD"]
-LINE_TOKEN    = os.environ["LINE_TOKEN"]
-LINE_GROUP_ID = os.environ["LINE_GROUP_ID"]
 GOOGLE_CREDS  = os.environ["GOOGLE_CREDENTIALS"]
 SHEET_ID      = "11HKDlLqz4hedo3HWtxNHXHHL8gPS1oN8NlCH_EV5ZfU"
 LOGIN_URL     = "https://csi-bdms-mgrs.azurewebsites.net"
@@ -43,7 +42,6 @@ def export_excel():
     try:
         wait = WebDriverWait(driver, 20)
 
-        # Login
         driver.get(LOGIN_URL)
         wait.until(EC.presence_of_element_located((By.NAME, "username")))
         driver.find_element(By.NAME, "username").send_keys(USERNAME)
@@ -52,19 +50,16 @@ def export_excel():
         wait.until(EC.url_contains("FirstPage"))
         print("✅ Login สำเร็จ")
 
-        # ไปหน้า Export
         driver.get(f"{LOGIN_URL}/Home/Export?uid=87")
         time.sleep(3)
         print("✅ เข้าหน้า Export แล้ว")
 
-        # เลือก BHP
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "select")))
         select = Select(driver.find_element(By.TAG_NAME, "select"))
         select.select_by_visible_text("BHP")
         print("✅ เลือก BHP แล้ว")
         time.sleep(2)
 
-        # ติ๊ก checkbox เฉพาะที่มีตัวเลข ()
         labels = driver.find_elements(By.CSS_SELECTOR, "label")
         for label in labels:
             text = label.text.strip()
@@ -79,15 +74,13 @@ def export_excel():
                     pass
         time.sleep(1)
 
-        # กด Export Data
         export_btn = wait.until(EC.element_to_be_clickable(
-        (By.CLASS_NAME, "btn-success")
+            (By.CLASS_NAME, "btn-success")
         ))
         export_btn.click()
         print("✅ กด Export แล้ว")
         time.sleep(5)
 
-        # หาไฟล์
         files = glob.glob(f"{download_dir}/*.xlsx")
         if not files:
             files = glob.glob(f"{download_dir}/*")
@@ -111,35 +104,27 @@ def upload_to_sheets(filepath):
     gc = gspread.authorize(creds)
     sh = gc.open_by_key(SHEET_ID)
 
-    import openpyxl
     wb = openpyxl.load_workbook(filepath)
-    
-    today = datetime.now().strftime("%d/%m/%Y")
-    
+
     for sheet_name in wb.sheetnames:
         ws = wb[sheet_name]
         data = []
         for row in ws.iter_rows(values_only=True):
             data.append([str(cell) if cell is not None else "" for cell in row])
 
-        
         try:
             worksheet = sh.worksheet(sheet_name)
             worksheet.clear()
         except:
             worksheet = sh.add_worksheet(title=sheet_name, rows=1000, cols=20)
-        
+
         worksheet.update(data)
         print(f"✅ อัพเดต Sheet: {sheet_name}")
 
-    sheet_url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}"
-    return
+    return f"https://docs.google.com/spreadsheets/d/{SHEET_ID}"
 
-# Main
 filepath = export_excel()
 if filepath:
-    sheet_url = upload_to_sheets(filepath)
-    today = datetime.now().strftime("%d/%b/%Y")
-    message = f"\n📊 CSI Export BHP\n📅 {today}\n✅ อัพเดต Google Sheet แล้ว\n🔗 {sheet_url}"
+    upload_to_sheets(filepath)
 else:
     print("⚠️ ไม่พบไฟล์")
