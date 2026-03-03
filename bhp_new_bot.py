@@ -56,14 +56,19 @@ def export_excel():
         time.sleep(3)
         print("✅ เข้าหน้า Export แล้ว")
 
-        # Set วันที่เริ่มต้น
+        # Set วันที่เริ่มต้น - คลิก input เปิด calendar
         inputs = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "input[type='text']")))
         start_input = inputs[0]
         start_input.click()
         time.sleep(1)
-        start_input.clear()
-        start_input.send_keys(START_DATE)
-        time.sleep(1)
+
+        # คลิกวันที่ 1
+        day_cells = driver.find_elements(By.CSS_SELECTOR, "td.available")
+        for cell in day_cells:
+            if cell.text.strip() == "1":
+                cell.click()
+                break
+        time.sleep(0.5)
         apply_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".applyBtn")))
         driver.execute_script("arguments[0].click();", apply_btn)
         print(f"✅ Set วันเริ่มต้น: {START_DATE}")
@@ -71,12 +76,18 @@ def export_excel():
 
         # Set วันที่สิ้นสุด = วันนี้
         end_date = datetime.now().strftime("%d/%b/%Y")
+        today_day = str(datetime.now().day)
         end_input = inputs[1]
         end_input.click()
         time.sleep(1)
-        end_input.clear()
-        end_input.send_keys(end_date)
-        time.sleep(1)
+
+        # คลิกวันปัจจุบัน
+        day_cells = driver.find_elements(By.CSS_SELECTOR, "td.available")
+        for cell in day_cells:
+            if cell.text.strip() == today_day:
+                cell.click()
+                break
+        time.sleep(0.5)
         apply_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".applyBtn")))
         driver.execute_script("arguments[0].click();", apply_btn)
         print(f"✅ Set วันสิ้นสุด: {end_date}")
