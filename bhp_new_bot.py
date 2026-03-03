@@ -17,7 +17,7 @@ import openpyxl
 USERNAME     = os.environ["CSI_USERNAME"]
 PASSWORD     = os.environ["CSI_PASSWORD"]
 GOOGLE_CREDS = os.environ["GOOGLE_CREDENTIALS"]
-SHEET_ID     = "11HKDlLqz4hedo3HWtxNHXHHL8gPS1oN8NlCH_EV5ZfU"
+SHEET_ID     = "11dX9ga5X5yZBeL-Nb__F1bIS96QdIVbPZJ93QX7e0_E"
 LOGIN_URL    = "https://csi-bdms-mgrs.azurewebsites.net"
 START_DATE   = "01/Mar/2026"
 
@@ -124,7 +124,7 @@ def upload_to_sheets(filepath):
             worksheet = sh.worksheet(sheet_name)
             worksheet.clear()
         except:
-            worksheet = sh.add_worksheet(title=sheet_name, rows=1000, cols=30)
+            worksheet = sh.add_worksheet(title=sheet_name, rows=5000, cols=30)
 
         worksheet.update(data)
         print(f"✅ อัพเดต Sheet: {sheet_name}")
@@ -137,4 +137,3 @@ if filepath:
     upload_to_sheets(filepath)
 else:
     print("⚠️ Export ล้มเหลว")
-
