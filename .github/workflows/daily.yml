@@ -3,7 +3,7 @@ name: CSI Daily Report
 # force schedule
 on:
   schedule:
-    - cron: '* 5 * * *'
+    - cron: '0 5 * * *'
   workflow_dispatch:
 
 jobs:
