@@ -56,17 +56,21 @@ def export_excel():
         time.sleep(3)
         print("✅ เข้าหน้า Export แล้ว")
 
-        # Set วันที่เริ่มต้น - คลิก input เปิด calendar
+        # Set วันที่เริ่มต้น
         inputs = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "input[type='text']")))
         start_input = inputs[0]
         start_input.click()
         time.sleep(1)
+        driver.save_screenshot("/tmp/screenshot.png")
+        print("✅ บันทึก screenshot แล้ว")
 
-        # คลิกวันที่ 1
-        day_cells = driver.find_elements(By.CSS_SELECTOR, "td.available")
+        # คลิกวันที่ 1 (เฉพาะที่อยู่ในเดือนปัจจุบัน ไม่ใช่ off)
+        day_cells = driver.find_elements(By.CSS_SELECTOR, "td.available:not(.off)")
+        print(f"พบ td.available {len(day_cells)} อัน")
         for cell in day_cells:
             if cell.text.strip() == "1":
                 cell.click()
+                print("✅ คลิกวันที่ 1 แล้ว")
                 break
         time.sleep(0.5)
         apply_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".applyBtn")))
@@ -82,10 +86,11 @@ def export_excel():
         time.sleep(1)
 
         # คลิกวันปัจจุบัน
-        day_cells = driver.find_elements(By.CSS_SELECTOR, "td.available")
+        day_cells = driver.find_elements(By.CSS_SELECTOR, "td.available:not(.off)")
         for cell in day_cells:
             if cell.text.strip() == today_day:
                 cell.click()
+                print(f"✅ คลิกวันที่ {today_day} แล้ว")
                 break
         time.sleep(0.5)
         apply_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".applyBtn")))
