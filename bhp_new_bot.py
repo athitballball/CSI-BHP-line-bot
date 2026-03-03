@@ -9,6 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
 import gspread
 from google.oauth2.service_account import Credentials
@@ -60,9 +61,9 @@ def export_excel():
         start_input = inputs[0]
         start_input.click()
         time.sleep(1)
-        driver.execute_script("arguments[0].value = arguments[1];", start_input, START_DATE)
-        driver.execute_script("arguments[0].dispatchEvent(new Event('change', {bubbles: true}));", start_input)
-        time.sleep(0.5)
+        start_input.clear()
+        start_input.send_keys(START_DATE)
+        time.sleep(1)
         apply_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".applyBtn")))
         driver.execute_script("arguments[0].click();", apply_btn)
         print(f"✅ Set วันเริ่มต้น: {START_DATE}")
@@ -73,9 +74,9 @@ def export_excel():
         end_input = inputs[1]
         end_input.click()
         time.sleep(1)
-        driver.execute_script("arguments[0].value = arguments[1];", end_input, end_date)
-        driver.execute_script("arguments[0].dispatchEvent(new Event('change', {bubbles: true}));", end_input)
-        time.sleep(0.5)
+        end_input.clear()
+        end_input.send_keys(end_date)
+        time.sleep(1)
         apply_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".applyBtn")))
         driver.execute_script("arguments[0].click();", apply_btn)
         print(f"✅ Set วันสิ้นสุด: {end_date}")
