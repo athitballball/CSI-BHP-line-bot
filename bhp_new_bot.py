@@ -21,15 +21,6 @@ SHEET_ID     = "11dX9ga5X5yZBeL-Nb__F1bIS96QdIVbPZJ93QX7e0_E"
 LOGIN_URL    = "https://csi-bdms-mgrs.azurewebsites.net"
 START_DATE   = "01/Mar/2026"
 
-def set_date(driver, element, value):
-    driver.execute_script("""
-        var el = arguments[0];
-        var setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-        setter.call(el, arguments[1]);
-        el.dispatchEvent(new Event('input', { bubbles: true }));
-        el.dispatchEvent(new Event('change', { bubbles: true }));
-    """, element, value)
-
 def export_excel():
     download_dir = "/tmp/downloads"
     os.makedirs(download_dir, exist_ok=True)
@@ -38,6 +29,7 @@ def export_excel():
     options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--window-size=1920,1080")
     options.add_experimental_option("prefs", {
         "download.default_directory": download_dir,
         "download.prompt_for_download": False,
@@ -59,41 +51,64 @@ def export_excel():
         print("Login success")
 
         driver.get(LOGIN_URL + "/Home/Export?uid=87")
-        time.sleep(2)
+        time.sleep(3)
         print("Export page loaded")
 
         # เลือก BHP ก่อน
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "select")))
         Select(driver.find_element(By.TAG_NAME, "select")).select_by_visible_text("BHP")
         print("Selected BHP")
-        time.sleep(3)
+        time.sleep(2)
 
-        # ดู label หลังเลือก BHP
-        labels = driver.find_elements(By.CSS_SELECTOR, "label")
-        print("Found " + str(len(labels)) + " labels after BHP")
-        for label in labels:
-            print("label: " + label.text.strip())
-
-        # set วันที่
+        # เปิด calendar วันเริ่มต้น
         inputs = driver.find_elements(By.CSS_SELECTOR, "input[type='text']")
-        set_date(driver, inputs[0], START_DATE)
-        print("Start date set: " + START_DATE)
+        inputs[0].click()
+        time.sleep(2)
+        driver.save_screenshot("/tmp/screenshot.png")
+        print("Screenshot saved")
+
+        # คลิกวันที่ 1
+        day_cells = driver.find_elements(By.CSS_SELECTOR, "td.available:not(.off)")
+        print("Found " + str(len(day_cells)) + " day cells")
+        for cell in day_cells:
+            if cell.text.strip() == "1":
+                driver.execute_script("arguments[0].click();", cell)
+                print("Clicked day 1")
+                break
         time.sleep(0.5)
 
+        apply_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".applyBtn")))
+        driver.execute_script("arguments[0].click();", apply_btn)
+        print("Start date applied: " + START_DATE)
+        time.sleep(1)
+
+        # เปิด calendar วันสิ้นสุด
+        inputs = driver.find_elements(By.CSS_SELECTOR, "input[type='text']")
+        inputs[1].click()
+        time.sleep(2)
+
+        # คลิกวันปัจจุบัน
+        today_day = str(datetime.now().day)
+        day_cells = driver.find_elements(By.CSS_SELECTOR, "td.available:not(.off)")
+        for cell in day_cells:
+            if cell.text.strip() == today_day:
+                driver.execute_script("arguments[0].click();", cell)
+                print("Clicked day " + today_day)
+                break
+        time.sleep(0.5)
+
+        apply_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".applyBtn")))
+        driver.execute_script("arguments[0].click();", apply_btn)
         end_date = datetime.now().strftime("%d/%b/%Y")
-        set_date(driver, inputs[1], end_date)
-        print("End date set: " + end_date)
-        time.sleep(3)
+        print("End date applied: " + end_date)
+        time.sleep(2)
 
-        # ดู label หลัง set วันที่
+        # ติ๊ก checkbox ที่มีตัวเลขในวงเล็บ
         labels = driver.find_elements(By.CSS_SELECTOR, "label")
-        print("Found " + str(len(labels)) + " labels after set date")
-        for label in labels:
-            print("label: " + label.text.strip())
-
-        # ติ๊ก checkbox
+        print("Found " + str(len(labels)) + " labels")
         for label in labels:
             text = label.text.strip()
+            print("label: " + text)
             if "(" in text and ")" in text:
                 try:
                     checkbox_id = label.get_attribute("for")
