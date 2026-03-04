@@ -62,8 +62,14 @@ def export_excel():
         time.sleep(3)
         print("Export page loaded")
 
-        inputs = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "input[type='text']")))
+        # เลือก Site = BHP ก่อน
+        wait.until(EC.presence_of_element_located((By.TAG_NAME, "select")))
+        Select(driver.find_element(By.TAG_NAME, "select")).select_by_visible_text("BHP")
+        print("Selected BHP")
+        time.sleep(2)
 
+        # แล้วค่อย set วันที่
+        inputs = driver.find_elements(By.CSS_SELECTOR, "input[type='text']")
         set_date(driver, inputs[0], START_DATE)
         print("Start date set: " + START_DATE)
         time.sleep(0.5)
@@ -71,13 +77,9 @@ def export_excel():
         end_date = datetime.now().strftime("%d/%b/%Y")
         set_date(driver, inputs[1], end_date)
         print("End date set: " + end_date)
-        time.sleep(0.5)
+        time.sleep(2)
 
-        wait.until(EC.presence_of_element_located((By.TAG_NAME, "select")))
-        Select(driver.find_element(By.TAG_NAME, "select")).select_by_visible_text("BHP")
-        print("Selected BHP")
-        time.sleep(3)
-
+        # ติ๊ก checkbox ที่มีตัวเลขในวงเล็บ
         labels = driver.find_elements(By.CSS_SELECTOR, "label")
         print("Found " + str(len(labels)) + " labels")
         for label in labels:
