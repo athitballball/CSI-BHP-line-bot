@@ -69,7 +69,7 @@ def export_excel():
         inputs[0].send_keys(Keys.CONTROL + "a")
         inputs[0].send_keys(START_DATE)
         inputs[0].send_keys(Keys.ENTER)
-        time.sleep(2)
+        time.sleep(5)
         print("Start date typed: " + START_DATE)
 
         # พิมพ์วันที่สิ้นสุด
@@ -79,7 +79,7 @@ def export_excel():
         inputs[1].send_keys(Keys.CONTROL + "a")
         inputs[1].send_keys(end_date)
         inputs[1].send_keys(Keys.ENTER)
-        time.sleep(5)
+        time.sleep(10)
         print("End date typed: " + end_date)
 
         driver.save_screenshot("/tmp/screenshot.png")
