@@ -28,9 +28,3 @@ jobs:
           CSI_PASSWORD: ${{ secrets.CSI_PASSWORD }}
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
         run: python bhp_new_bot.py
-      - name: Upload screenshot
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: screenshot
-          path: /tmp/screenshot.png
