@@ -9,6 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from webdriver_manager.chrome import ChromeDriverManager
 import gspread
@@ -61,48 +62,28 @@ def export_excel():
         print("Selected BHP")
         time.sleep(2)
 
-        # เปิด calendar วันเริ่มต้น
+        # พิมพ์วันที่เริ่มต้น
         inputs = driver.find_elements(By.CSS_SELECTOR, "input[type='text']")
-        ActionChains(driver).move_to_element(inputs[0]).click().perform()
+        inputs[0].click()
+        time.sleep(1)
+        inputs[0].clear()
+        inputs[0].send_keys(START_DATE)
+        inputs[0].send_keys(Keys.ENTER)
+        time.sleep(1)
+        print("Start date typed: " + START_DATE)
+
+        # พิมพ์วันที่สิ้นสุด
+        end_date = datetime.now().strftime("%d/%b/%Y")
+        inputs[1].click()
+        time.sleep(1)
+        inputs[1].clear()
+        inputs[1].send_keys(end_date)
+        inputs[1].send_keys(Keys.ENTER)
         time.sleep(2)
+        print("End date typed: " + end_date)
+
         driver.save_screenshot("/tmp/screenshot.png")
         print("Screenshot saved")
-
-        # คลิกวันที่ 1
-        day_cells = driver.find_elements(By.CSS_SELECTOR, "td.available:not(.off)")
-        print("Found " + str(len(day_cells)) + " day cells")
-        for cell in day_cells:
-            if cell.text.strip() == "1":
-                ActionChains(driver).move_to_element(cell).click().perform()
-                print("Clicked day 1")
-                break
-        time.sleep(0.5)
-
-        apply_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".applyBtn")))
-        driver.execute_script("arguments[0].click();", apply_btn)
-        print("Start date applied: " + START_DATE)
-        time.sleep(1)
-
-        # เปิด calendar วันสิ้นสุด
-        inputs = driver.find_elements(By.CSS_SELECTOR, "input[type='text']")
-        ActionChains(driver).move_to_element(inputs[1]).click().perform()
-        time.sleep(2)
-
-        # คลิกวันปัจจุบัน
-        today_day = str(datetime.now().day)
-        day_cells = driver.find_elements(By.CSS_SELECTOR, "td.available:not(.off)")
-        for cell in day_cells:
-            if cell.text.strip() == today_day:
-                ActionChains(driver).move_to_element(cell).click().perform()
-                print("Clicked day " + today_day)
-                break
-        time.sleep(0.5)
-
-        apply_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".applyBtn")))
-        driver.execute_script("arguments[0].click();", apply_btn)
-        end_date = datetime.now().strftime("%d/%b/%Y")
-        print("End date applied: " + end_date)
-        time.sleep(2)
 
         # ติ๊ก checkbox ที่มีตัวเลขในวงเล็บ
         labels = driver.find_elements(By.CSS_SELECTOR, "label")
