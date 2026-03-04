@@ -9,6 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.action_chains import ActionChains
 from webdriver_manager.chrome import ChromeDriverManager
 import gspread
 from google.oauth2.service_account import Credentials
@@ -62,7 +63,7 @@ def export_excel():
 
         # เปิด calendar วันเริ่มต้น
         inputs = driver.find_elements(By.CSS_SELECTOR, "input[type='text']")
-        inputs[0].click()
+        ActionChains(driver).move_to_element(inputs[0]).click().perform()
         time.sleep(2)
         driver.save_screenshot("/tmp/screenshot.png")
         print("Screenshot saved")
@@ -72,7 +73,7 @@ def export_excel():
         print("Found " + str(len(day_cells)) + " day cells")
         for cell in day_cells:
             if cell.text.strip() == "1":
-                driver.execute_script("arguments[0].click();", cell)
+                ActionChains(driver).move_to_element(cell).click().perform()
                 print("Clicked day 1")
                 break
         time.sleep(0.5)
@@ -84,7 +85,7 @@ def export_excel():
 
         # เปิด calendar วันสิ้นสุด
         inputs = driver.find_elements(By.CSS_SELECTOR, "input[type='text']")
-        inputs[1].click()
+        ActionChains(driver).move_to_element(inputs[1]).click().perform()
         time.sleep(2)
 
         # คลิกวันปัจจุบัน
@@ -92,7 +93,7 @@ def export_excel():
         day_cells = driver.find_elements(By.CSS_SELECTOR, "td.available:not(.off)")
         for cell in day_cells:
             if cell.text.strip() == today_day:
-                driver.execute_script("arguments[0].click();", cell)
+                ActionChains(driver).move_to_element(cell).click().perform()
                 print("Clicked day " + today_day)
                 break
         time.sleep(0.5)
