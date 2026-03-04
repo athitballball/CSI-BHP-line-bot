@@ -59,16 +59,22 @@ def export_excel():
         print("Login success")
 
         driver.get(LOGIN_URL + "/Home/Export?uid=87")
-        time.sleep(3)
+        time.sleep(2)
         print("Export page loaded")
 
-        # เลือก Site = BHP ก่อน
+        # เลือก BHP ก่อน
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "select")))
         Select(driver.find_element(By.TAG_NAME, "select")).select_by_visible_text("BHP")
         print("Selected BHP")
-        time.sleep(2)
+        time.sleep(3)
 
-        # แล้วค่อย set วันที่
+        # ดู label หลังเลือก BHP
+        labels = driver.find_elements(By.CSS_SELECTOR, "label")
+        print("Found " + str(len(labels)) + " labels after BHP")
+        for label in labels:
+            print("label: " + label.text.strip())
+
+        # set วันที่
         inputs = driver.find_elements(By.CSS_SELECTOR, "input[type='text']")
         set_date(driver, inputs[0], START_DATE)
         print("Start date set: " + START_DATE)
@@ -77,14 +83,17 @@ def export_excel():
         end_date = datetime.now().strftime("%d/%b/%Y")
         set_date(driver, inputs[1], end_date)
         print("End date set: " + end_date)
-        time.sleep(2)
+        time.sleep(3)
 
-        # ติ๊ก checkbox ที่มีตัวเลขในวงเล็บ
+        # ดู label หลัง set วันที่
         labels = driver.find_elements(By.CSS_SELECTOR, "label")
-        print("Found " + str(len(labels)) + " labels")
+        print("Found " + str(len(labels)) + " labels after set date")
+        for label in labels:
+            print("label: " + label.text.strip())
+
+        # ติ๊ก checkbox
         for label in labels:
             text = label.text.strip()
-            print("label: " + text)
             if "(" in text and ")" in text:
                 try:
                     checkbox_id = label.get_attribute("for")
