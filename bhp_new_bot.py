@@ -43,7 +43,6 @@ driver = webdriver.Chrome(
 try:
     wait = WebDriverWait(driver, 20)
 
-    # Login
     driver.get(LOGIN_URL)
     wait.until(EC.presence_of_element_located((By.NAME, "username")))
     driver.find_element(By.NAME, "username").send_keys(USERNAME)
@@ -52,12 +51,10 @@ try:
     wait.until(EC.url_contains("FirstPage"))
     print("Login success")
 
-    # Export page
-    driver.get(f"{LOGIN_URL}/Home/Export?uid=87")
+    driver.get(LOGIN_URL + "/Home/Export?uid=87")
     time.sleep(3)
     print("Export page loaded")
 
-    # Set start date
     inputs = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "input[type='text']")))
     start_input = inputs[0]
     driver.execute_script("arguments[0].click();", start_input)
@@ -66,7 +63,7 @@ try:
     print("Screenshot saved")
 
     day_cells = driver.find_elements(By.CSS_SELECTOR, "td.available:not(.off)")
-    print(f"Found {len(day_cells)} day cells")
+    print("Found " + str(len(day_cells)) + " day cells")
     for cell in day_cells:
         if cell.text.strip() == "1":
             driver.execute_script("arguments[0].click();", cell)
@@ -79,7 +76,6 @@ try:
     print("Start date set: " + START_DATE)
     time.sleep(1)
 
-    # Set end date
     end_date = datetime.now().strftime("%d/%b/%Y")
     today_day = str(datetime.now().day)
     end_input = inputs[1]
@@ -99,13 +95,11 @@ try:
     print("End date set: " + end_date)
     time.sleep(1)
 
-    # Select Site = BHP
     wait.until(EC.presence_of_element_located((By.TAG_NAME, "select")))
     Select(driver.find_element(By.TAG_NAME, "select")).select_by_visible_text("BHP")
     print("Selected BHP")
     time.sleep(2)
 
-    # Tick checkboxes with numbers
     time.sleep(3)
     labels = driver.find_elements(By.CSS_SELECTOR, "label")
     for label in labels:
@@ -124,18 +118,15 @@ try:
                 print("Could not tick: " + text + " -> " + str(e))
     time.sleep(1)
 
-    # Close date picker
     driver.execute_script("document.body.click();")
     time.sleep(1)
 
-    # Click Export
     export_btn = wait.until(EC.presence_of_element_located((By.ID, "exportBtn")))
     driver.execute_script("arguments[0].click();", export_btn)
     print("Clicked Export")
     time.sleep(5)
 
-    # Find downloaded file
-    files = glob.glob(f"{download_dir}/*.xlsx") or glob.glob(f"{download_dir}/*")
+    files = glob.glob(download_dir + "/*.xlsx") or glob.glob(download_dir + "/*")
     if files:
         filepath = max(files, key=os.path.getctime)
         print("Downloaded: " + filepath)
@@ -175,8 +166,6 @@ for sheet_name in wb.sheetnames:
 
 print("https://docs.google.com/spreadsheets/d/" + SHEET_ID)
 ```
-
-# Main
 
 filepath = export_excel()
 if filepath:
