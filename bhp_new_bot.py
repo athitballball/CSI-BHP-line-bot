@@ -76,12 +76,13 @@ def export_excel():
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "select")))
         Select(driver.find_element(By.TAG_NAME, "select")).select_by_visible_text("BHP")
         print("Selected BHP")
-        time.sleep(2)
-
         time.sleep(3)
+
         labels = driver.find_elements(By.CSS_SELECTOR, "label")
+        print("Found " + str(len(labels)) + " labels")
         for label in labels:
             text = label.text.strip()
+            print("label: " + text)
             if "(" in text and ")" in text:
                 try:
                     checkbox_id = label.get_attribute("for")
@@ -102,7 +103,7 @@ def export_excel():
         export_btn = wait.until(EC.presence_of_element_located((By.ID, "exportBtn")))
         driver.execute_script("arguments[0].click();", export_btn)
         print("Clicked Export")
-        time.sleep(5)
+        time.sleep(10)
 
         files = glob.glob(download_dir + "/*.xlsx") or glob.glob(download_dir + "/*")
         if files:
