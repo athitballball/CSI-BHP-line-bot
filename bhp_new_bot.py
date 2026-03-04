@@ -62,23 +62,34 @@ def export_excel():
         print("Selected BHP")
         time.sleep(2)
 
+        # หา input วันที่โดย xpath
+        date_inputs = driver.find_elements(By.XPATH, "//label[contains(text(),'วันที่เริ่มต้น')]/..//input | //label[contains(text(),'วันที่สิ้นสุด')]/..//input")
+        print("Date inputs found: " + str(len(date_inputs)))
+
+        # ถ้าไม่เจอให้ใช้ id หรือ name
+        if len(date_inputs) < 2:
+            all_inputs = driver.find_elements(By.CSS_SELECTOR, "input[type='text']")
+            print("All text inputs: " + str(len(all_inputs)))
+            for i, inp in enumerate(all_inputs):
+                print("input " + str(i) + " value: " + inp.get_attribute("value") + " id: " + str(inp.get_attribute("id")))
+            date_inputs = all_inputs[1:3]
+
         # พิมพ์วันที่เริ่มต้น
-        inputs = driver.find_elements(By.CSS_SELECTOR, "input[type='text']")
-        inputs[0].click()
+        ActionChains(driver).move_to_element(date_inputs[0]).click().perform()
         time.sleep(1)
-        inputs[0].send_keys(Keys.CONTROL + "a")
-        inputs[0].send_keys(START_DATE)
-        inputs[0].send_keys(Keys.ENTER)
-        time.sleep(5)
+        date_inputs[0].send_keys(Keys.CONTROL + "a")
+        date_inputs[0].send_keys(START_DATE)
+        date_inputs[0].send_keys(Keys.ENTER)
+        time.sleep(2)
         print("Start date typed: " + START_DATE)
 
         # พิมพ์วันที่สิ้นสุด
         end_date = datetime.now().strftime("%d/%b/%Y")
-        inputs[1].click()
+        ActionChains(driver).move_to_element(date_inputs[1]).click().perform()
         time.sleep(1)
-        inputs[1].send_keys(Keys.CONTROL + "a")
-        inputs[1].send_keys(end_date)
-        inputs[1].send_keys(Keys.ENTER)
+        date_inputs[1].send_keys(Keys.CONTROL + "a")
+        date_inputs[1].send_keys(end_date)
+        date_inputs[1].send_keys(Keys.ENTER)
         time.sleep(10)
         print("End date typed: " + end_date)
 
