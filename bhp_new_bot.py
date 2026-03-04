@@ -65,14 +65,29 @@ try:
 
     inputs = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "input[type='text']")))
 
-    set_date(driver, inputs[0], START_DATE)
-    print("Start date set: " + START_DATE)
-    time.sleep(0.5)
+    # Set วันที่เริ่มต้น = 01/Mar/2026
+inputs = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "input[type='text']")))
+driver.execute_script("""
+    var el = arguments[0];
+    var nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+    nativeInputValueSetter.call(el, arguments[1]);
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+""", inputs[0], "01/Mar/2026")
+print("Start date set")
+time.sleep(0.5)
 
-    end_date = datetime.now().strftime("%d/%b/%Y")
-    set_date(driver, inputs[1], end_date)
-    print("End date set: " + end_date)
-    time.sleep(0.5)
+# Set วันที่สิ้นสุด = วันนี้
+end_date = datetime.now().strftime("%d/%b/%Y")
+driver.execute_script("""
+    var el = arguments[0];
+    var nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+    nativeInputValueSetter.call(el, arguments[1]);
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+""", inputs[1], end_date)
+print("End date set: " + end_date)
+time.sleep(0.5)
 
     driver.save_screenshot("/tmp/screenshot.png")
     print("Screenshot saved")
