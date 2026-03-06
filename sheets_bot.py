@@ -32,6 +32,7 @@ def export_excel():
     prefs = {
         "download.default_directory": download_dir,
         "download.prompt_for_download": False,
+        "download.directory_upgrade": True,
     }
     options.add_experimental_option("prefs", prefs)
 
@@ -74,23 +75,33 @@ def export_excel():
                     pass
         time.sleep(1)
 
+        # ✅ เพิ่ม CDP ก่อนกด Export
+        driver.execute_cdp_cmd(
+            "Page.setDownloadBehavior",
+            {"behavior": "allow", "downloadPath": download_dir}
+        )
+
         export_btn = wait.until(EC.element_to_be_clickable(
             (By.CLASS_NAME, "btn-success")
         ))
         export_btn.click()
         print("✅ กด Export แล้ว")
-        time.sleep(5)
 
-        files = glob.glob(f"{download_dir}/*.xlsx")
-        if not files:
-            files = glob.glob(f"{download_dir}/*")
-        if files:
-            filepath = max(files, key=os.path.getctime)
-            print(f"✅ ดาวน์โหลดสำเร็จ: {filepath}")
-            return filepath
-        else:
-            print("⚠️ ไม่พบไฟล์")
-            return None
+        # ✅ รอไฟล์จริงๆ สูงสุด 30 วินาที
+        for i in range(30):
+            files = glob.glob(f"{download_dir}/*.xlsx")
+            complete = [f for f in files if not f.endswith(".crdownload")]
+            if complete:
+                filepath = max(complete, key=os.path.getctime)
+                print(f"✅ ดาวน์โหลดสำเร็จ: {filepath}")
+                return filepath
+            print(f"⏳ รอไฟล์... ({i+1}/30)")
+            time.sleep(1)
+
+        # ✅ debug ดูว่ามีอะไรใน folder
+        all_files = os.listdir(download_dir)
+        print(f"⚠️ ไฟล์ใน {download_dir}: {all_files}")
+        return None
 
     finally:
         driver.quit()
@@ -123,8 +134,10 @@ def upload_to_sheets(filepath):
 
     return f"https://docs.google.com/spreadsheets/d/{SHEET_ID}"
 
+# ✅ Main
 filepath = export_excel()
 if filepath:
-    upload_to_sheets(filepath)
+    sheet_url = upload_to_sheets(filepath)
+    print(f"✅ เสร็จสิ้น: {sheet_url}")
 else:
-    print("⚠️ ไม่พบไฟล์")
+    print("⚠️ ไม่พบไฟล์ ไม่สามารถอัพโหลดได้")
