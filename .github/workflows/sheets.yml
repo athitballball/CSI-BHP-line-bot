@@ -2,7 +2,7 @@ name: CSI Sheets Export
 
 on:
   schedule:
-    - cron: '0 0-13 * * *'
+    - cron: '0 1 * * *'
   workflow_dispatch:
 
 jobs:
