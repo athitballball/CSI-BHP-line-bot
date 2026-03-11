@@ -56,17 +56,14 @@ def export_excel():
         time.sleep(3)
         print("Export page loaded")
 
-        # เลือก BHP ก่อน
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "select")))
         Select(driver.find_element(By.TAG_NAME, "select")).select_by_visible_text("BHP")
         print("Selected BHP")
         time.sleep(2)
 
-        # หา input วันที่โดย xpath
         date_inputs = driver.find_elements(By.XPATH, "//label[contains(text(),'วันที่เริ่มต้น')]/..//input | //label[contains(text(),'วันที่สิ้นสุด')]/..//input")
         print("Date inputs found: " + str(len(date_inputs)))
 
-        # ถ้าไม่เจอให้ใช้ id หรือ name
         if len(date_inputs) < 2:
             all_inputs = driver.find_elements(By.CSS_SELECTOR, "input[type='text']")
             print("All text inputs: " + str(len(all_inputs)))
@@ -74,7 +71,6 @@ def export_excel():
                 print("input " + str(i) + " value: " + inp.get_attribute("value") + " id: " + str(inp.get_attribute("id")))
             date_inputs = all_inputs[1:3]
 
-        # พิมพ์วันที่เริ่มต้น
         ActionChains(driver).move_to_element(date_inputs[0]).click().perform()
         time.sleep(1)
         date_inputs[0].send_keys(Keys.CONTROL + "a")
@@ -83,7 +79,6 @@ def export_excel():
         time.sleep(2)
         print("Start date typed: " + START_DATE)
 
-        # พิมพ์วันที่สิ้นสุด
         end_date = datetime.now().strftime("%d/%b/%Y")
         ActionChains(driver).move_to_element(date_inputs[1]).click().perform()
         time.sleep(1)
@@ -96,7 +91,6 @@ def export_excel():
         driver.save_screenshot("/tmp/screenshot.png")
         print("Screenshot saved")
 
-        # ติ๊ก checkbox ที่มีตัวเลขในวงเล็บ
         labels = driver.find_elements(By.CSS_SELECTOR, "label")
         print("Found " + str(len(labels)) + " labels")
         for label in labels:
@@ -122,16 +116,20 @@ def export_excel():
         export_btn = wait.until(EC.presence_of_element_located((By.ID, "exportBtn")))
         driver.execute_script("arguments[0].click();", export_btn)
         print("Clicked Export")
-        time.sleep(10)
 
-        files = glob.glob(download_dir + "/*.xlsx") or glob.glob(download_dir + "/*")
-        if files:
-            filepath = max(files, key=os.path.getctime)
-            print("Downloaded: " + filepath)
-            return filepath
-        else:
-            print("No file found")
-            return None
+        # รอไฟล์จริงๆ สูงสุด 60 วินาที
+        for i in range(60):
+            files = glob.glob(download_dir + "/*.xlsx")
+            complete = [f for f in files if not f.endswith(".crdownload")]
+            if complete:
+                filepath = max(complete, key=os.path.getctime)
+                print("Downloaded: " + filepath)
+                return filepath
+            print(f"Waiting for file... ({i+1}/60)")
+            time.sleep(1)
+
+        print("No file found")
+        return None
 
     finally:
         driver.quit()
