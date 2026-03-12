@@ -6,6 +6,9 @@ on:
     - cron: "0 9 * * *"
   workflow_dispatch:  # รันมือได้ด้วย
 
+permissions:
+  contents: write  # อนุญาตให้ commit ภาพลง repo ได้
+
 jobs:
   send-report:
     runs-on: ubuntu-latest
@@ -33,13 +36,6 @@ jobs:
           GOOGLE_PASSWORD:             ${{ secrets.GOOGLE_PASSWORD }}
           LINE_CHANNEL_ACCESS_TOKEN:   ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
           LINE_GROUP_ID:               ${{ secrets.LINE_GROUP_ID }}
-          IMGBB_API_KEY:               ${{ secrets.IMGBB_API_KEY }}
+          GITHUB_TOKEN:                ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY:           ${{ github.repository }}
         run: python send_report.py
-
-      - name: Upload screenshot artifact (for debug)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: report-screenshot
-          path: report_page14.png
-          retention-days: 3
