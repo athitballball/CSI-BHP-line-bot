@@ -2,43 +2,38 @@ name: Send Looker Studio Report
 
 on:
   schedule:
-    # ตั้งเวลารันทุกวันตอน 16:00 น. (เวลาไทยคือ UTC 09:00)
+    # รันทุกวันเวลา 16:00 น. ของไทย (UTC 09:00)
     - cron: '0 9 * * *'
-  workflow_dispatch: # ปุ่มกดรันเองได้จากหน้า GitHub Actions
+  workflow_dispatch: # กดปุ่มรันเองได้
 
 jobs:
-  run-script:
+  run-automation:
     runs-on: ubuntu-latest
-    
-    # กำหนดสิทธิ์ให้ Actions สามารถเขียนไฟล์ลง Repo ได้ (สำหรับ upload_to_github)
     permissions:
-      contents: write
+      contents: write # สำคัญ: เพื่อให้สคริปต์อัปโหลดรูปกลับเข้า Repo ได้
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
           cache: 'pip'
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install playwright requests
-          # ติดตั้งเบราว์เซอร์ Chromium สำหรับ Playwright
           playwright install chromium --with-deps
 
-      - name: Run Send Report Script
+      - name: Execute Script
         env:
-          # ดึงค่าจาก GitHub Secrets ที่คุณต้องไปตั้งค่าไว้
           LOOKER_STUDIO_URL: ${{ secrets.LOOKER_STUDIO_URL }}
           GOOGLE_EMAIL: ${{ secrets.GOOGLE_EMAIL }}
           GOOGLE_PASSWORD: ${{ secrets.GOOGLE_PASSWORD }}
           LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
           LINE_GROUP_ID: ${{ secrets.LINE_GROUP_ID }}
-          # GITHUB_TOKEN มีให้ใช้อยู่แล้วอัตโนมัติ ไม่ต้องสร้างใหม่ใน Secrets
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python send_report.py
