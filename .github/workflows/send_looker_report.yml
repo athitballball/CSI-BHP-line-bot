@@ -2,15 +2,15 @@ name: Send Looker Studio Report
 
 on:
   schedule:
-    # รันทุกวันเวลา 16:00 น. ของไทย (UTC 09:00)
+    # รันทุกวันเวลา 16:00 น. (เวลาไทย) หรือ 09:00 UTC
     - cron: '0 9 * * *'
-  workflow_dispatch: # กดปุ่มรันเองได้
+  workflow_dispatch: # เพิ่มปุ่มให้กดรันเองได้
 
 jobs:
-  run-automation:
+  automation:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # สำคัญ: เพื่อให้สคริปต์อัปโหลดรูปกลับเข้า Repo ได้
+      contents: write # ให้สิทธิ์เขียนไฟล์ลง Repo เพื่ออัปเดตรูป
 
     steps:
       - name: Checkout Code
@@ -28,7 +28,7 @@ jobs:
           pip install playwright requests
           playwright install chromium --with-deps
 
-      - name: Execute Script
+      - name: Run Script
         env:
           LOOKER_STUDIO_URL: ${{ secrets.LOOKER_STUDIO_URL }}
           GOOGLE_EMAIL: ${{ secrets.GOOGLE_EMAIL }}
@@ -36,4 +36,5 @@ jobs:
           LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
           LINE_GROUP_ID: ${{ secrets.LINE_GROUP_ID }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # มั่นใจว่าชื่อไฟล์ตรงกับที่คุณแก้ (send_report.py)
         run: python send_report.py
