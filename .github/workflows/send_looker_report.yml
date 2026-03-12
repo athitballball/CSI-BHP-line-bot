@@ -1,0 +1,45 @@
+name: Send Looker Studio Report to LINE
+
+on:
+  schedule:
+    # 16:00 น. เวลาไทย (UTC+7) = 09:00 UTC ทุกวัน
+    - cron: "0 9 * * *"
+  workflow_dispatch:  # รันมือได้ด้วย
+
+jobs:
+  send-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install playwright requests
+          playwright install chromium
+          playwright install-deps chromium
+
+      - name: Run script
+        env:
+          LOOKER_STUDIO_URL:           ${{ secrets.LOOKER_STUDIO_URL }}
+          GOOGLE_EMAIL:                ${{ secrets.GOOGLE_EMAIL }}
+          GOOGLE_PASSWORD:             ${{ secrets.GOOGLE_PASSWORD }}
+          LINE_CHANNEL_ACCESS_TOKEN:   ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          LINE_GROUP_ID:               ${{ secrets.LINE_GROUP_ID }}
+          IMGBB_API_KEY:               ${{ secrets.IMGBB_API_KEY }}
+        run: python send_report.py
+
+      - name: Upload screenshot artifact (for debug)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-screenshot
+          path: report_page14.png
+          retention-days: 3
