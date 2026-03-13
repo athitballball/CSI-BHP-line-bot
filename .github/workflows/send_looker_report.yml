@@ -33,7 +33,7 @@ jobs:
           LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
           LINE_GROUP_ID: ${{ secrets.LINE_GROUP_ID }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}   # ✅ เพิ่ม: ดึงจาก GitHub context อัตโนมัติ
+          GITHUB_BRANCH: ${{ github.ref_name }}         # ✅ เพิ่ม: ดึง branch ปัจจุบันอัตโนมัติ
         run: |
-          # ตรวจสอบชื่อไฟล์ก่อนรัน
-          ls -R
-          python send_report.py
+          python capture_and_send_line.py               # ✅ แก้: ชื่อไฟล์ให้ตรงกัน (ลบ "ตรวจสอบไฟ" ออก)
