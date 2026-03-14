@@ -122,14 +122,14 @@ def export_excel():
         print("Clicked Export")
 
         # รอไฟล์จริงๆ สูงสุด 60 วินาที
-        for i in range(60):
+        for i in range(120):
             files = glob.glob(download_dir + "/*.xlsx")
             complete = [f for f in files if not f.endswith(".crdownload")]
             if complete:
                 filepath = max(complete, key=os.path.getctime)
                 print("Downloaded: " + filepath)
                 return filepath
-            print(f"Waiting for file... ({i+1}/60)")
+            print(f"Waiting for file... ({i+1}/120)")
             time.sleep(1)
 
         print("No file found")
