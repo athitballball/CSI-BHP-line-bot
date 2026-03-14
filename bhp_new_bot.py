@@ -40,7 +40,10 @@ def export_excel():
     driver = webdriver.Chrome(
         service=Service(ChromeDriverManager().install()), options=options
     )
-
+    driver.execute_cdp_cmd(
+        "Page.setDownloadBehavior",
+        {"behavior": "allow", "downloadPath": download_dir}
+)
     try:
         wait = WebDriverWait(driver, 20)
 
