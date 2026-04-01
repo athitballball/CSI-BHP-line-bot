@@ -161,7 +161,7 @@ def send_to_line(image_url: str):
             },
             {
                 "type": "text",
-                "text": f"📊 รายงาน CSI ประจำวัน - หน้า 14\n🕐 อัปเดต: {timestamp_str}\n✅ ข้อมูลล่าสุดเรียบร้อยครับ"
+                "text": f"คำชื่นชมประจำวันโรงพยาบาลกรุงเทพปากช่อง\nอัปเดต: {datetime.now().strftime('%d/%m/%Y %H:%M')}"
             }
         ]
     }
