@@ -122,8 +122,8 @@ finally:
         driver.quit()
 
 
-    def upload_to_sheets(filepath):
-    	creds = Credentials.from_service_account_info(
+def upload_to_sheets(filepath):
+        creds = Credentials.from_service_account_info(
     	json.loads(GOOGLE_CREDS),
     	scopes=[“https://www.googleapis.com/auth/spreadsheets”]
         )
