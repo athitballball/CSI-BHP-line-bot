@@ -28,19 +28,19 @@ def export_excel():
     os.makedirs(download_dir, exist_ok=True)
 
 
-options = webdriver.ChromeOptions()
-options.add_argument("--headless=new")
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
-options.add_argument("--window-size=1920,1080")
-options.add_experimental_option("prefs", {
-    "download.default_directory": download_dir,
-    "download.prompt_for_download": False,
-})
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless=new")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--window-size=1920,1080")
+    options.add_experimental_option("prefs", {
+        "download.default_directory": download_dir,
+        "download.prompt_for_download": False,
+	})
 
-driver = webdriver.Chrome(
-    service=Service(ChromeDriverManager().install()), options=options
-)
+	driver = webdriver.Chrome(
+        service=Service(ChromeDriverManager().install()), options=options
+	)
 
 try:
     wait = WebDriverWait(driver, 20)
