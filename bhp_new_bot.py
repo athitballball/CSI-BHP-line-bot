@@ -119,7 +119,7 @@ try:
         print("No file found")
         return None
 
-        finally:
+    finally:
             driver.quit()
 
 
