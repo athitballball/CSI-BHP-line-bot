@@ -119,8 +119,8 @@ try:
         print("No file found")
         return None
 
-    finally:
-    driver.quit()
+        finally:
+            driver.quit()
 
 
 	def upload_to_sheets(filepath):
@@ -133,22 +133,22 @@ try:
     	wb = openpyxl.load_workbook(filepath)
 
 
-	for sheet_name in wb.sheetnames:
-    ws = wb[sheet_name]
-    data = [
-        [str(cell) if cell is not None else "" for cell in row]
-        for row in ws.iter_rows(values_only=True)
-    ]
-    try:
-        worksheet = sh.worksheet(sheet_name)
-        worksheet.clear()
-    except Exception:
-        worksheet = sh.add_worksheet(title=sheet_name, rows=5000, cols=30)
+    	for sheet_name in wb.sheetnames:
+        ws = wb[sheet_name]
+        data = [
+            [str(cell) if cell is not None else "" for cell in row]
+            for row in ws.iter_rows(values_only=True)
+            ]
+        try:
+            worksheet = sh.worksheet(sheet_name)
+            worksheet.clear()
+        except Exception:
+            worksheet = sh.add_worksheet(title=sheet_name, rows=5000, cols=30)
 
-    worksheet.update(data)
-    print("Updated sheet: " + sheet_name)
+        worksheet.update(data)
+        print("Updated sheet: " + sheet_name)
 
-print("https://docs.google.com/spreadsheets/d/" + SHEET_ID)
+    print("https://docs.google.com/spreadsheets/d/" + SHEET_ID)
 
 filepath = export_excel()
 if filepath:
