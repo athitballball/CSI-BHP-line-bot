@@ -118,9 +118,8 @@ try:
     else:
         print("No file found")
         return None
-
-    finally:
-            driver.quit()
+finally:
+        driver.quit()
 
 
 	def upload_to_sheets(filepath):
