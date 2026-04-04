@@ -16,15 +16,15 @@ import gspread
 from google.oauth2.service_account import Credentials
 import openpyxl
 
-USERNAME     = os.environ[“CSI_USERNAME”]
-PASSWORD     = os.environ[“CSI_PASSWORD”]
-GOOGLE_CREDS = os.environ[“GOOGLE_CREDENTIALS”]
-SHEET_ID     = “11dX9ga5X5yZBeL-Nb__F1bIS96QdIVbPZJ93QX7e0_E”
-LOGIN_URL    = “https://csi-bdms-mgrs.azurewebsites.net”
-START_DATE   = “01/Mar/2026”
+USERNAME     = os.environ["CSI_USERNAME"]
+PASSWORD     = os.environ["CSI_PASSWORD"]
+GOOGLE_CREDS = os.environ["GOOGLE_CREDENTIALS"]
+SHEET_ID     = "11dX9ga5X5yZBeL-Nb__F1bIS96QdIVbPZJ93QX7e0_E"
+LOGIN_URL    = "https://csi-bdms-mgrs.azurewebsites.net"
+START_DATE   = "01/Mar/2026"
 
 def export_excel():
-download_dir = “/tmp/downloads”
+download_dir = "/tmp/downloads"
 os.makedirs(download_dir, exist_ok=True)
 
 ```
