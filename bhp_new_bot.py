@@ -123,13 +123,13 @@ finally:
 
 
 def upload_to_sheets(filepath):
-        creds = Credentials.from_service_account_info(
-    	json.loads(GOOGLE_CREDS),
-    	scopes=[“https://www.googleapis.com/auth/spreadsheets”]
-        )
-    	gc = gspread.authorize(creds)
-    	sh = gc.open_by_key(SHEET_ID)
-    	wb = openpyxl.load_workbook(filepath)
+    creds = Credentials.from_service_account_info(
+    json.loads(GOOGLE_CREDS),
+    scopes=[“https://www.googleapis.com/auth/spreadsheets”]
+    )
+    gc = gspread.authorize(creds)
+    sh = gc.open_by_key(SHEET_ID)
+    wb = openpyxl.load_workbook(filepath)
 
 
     	for sheet_name in wb.sheetnames:
