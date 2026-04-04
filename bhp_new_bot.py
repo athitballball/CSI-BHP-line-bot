@@ -24,10 +24,10 @@ LOGIN_URL    = "https://csi-bdms-mgrs.azurewebsites.net"
 START_DATE   = "01/Mar/2026"
 
 def export_excel():
-download_dir = "/tmp/downloads"
-os.makedirs(download_dir, exist_ok=True)
+    download_dir = "/tmp/downloads"
+    os.makedirs(download_dir, exist_ok=True)
 
-```
+
 options = webdriver.ChromeOptions()
 options.add_argument("--headless=new")
 options.add_argument("--no-sandbox")
@@ -121,7 +121,7 @@ try:
 
 finally:
     driver.quit()
-```
+
 
 def upload_to_sheets(filepath):
 creds = Credentials.from_service_account_info(
@@ -132,7 +132,7 @@ gc = gspread.authorize(creds)
 sh = gc.open_by_key(SHEET_ID)
 wb = openpyxl.load_workbook(filepath)
 
-```
+
 for sheet_name in wb.sheetnames:
     ws = wb[sheet_name]
     data = [
@@ -149,7 +149,7 @@ for sheet_name in wb.sheetnames:
     print("Updated sheet: " + sheet_name)
 
 print("https://docs.google.com/spreadsheets/d/" + SHEET_ID)
-```
+
 
 filepath = export_excel()
 if filepath:
