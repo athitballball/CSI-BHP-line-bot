@@ -132,7 +132,7 @@ def upload_to_sheets(filepath):
     wb = openpyxl.load_workbook(filepath)
 
 
-    	for sheet_name in wb.sheetnames:
+    for sheet_name in wb.sheetnames:
         ws = wb[sheet_name]
         data = [
             [str(cell) if cell is not None else "" for cell in row]
