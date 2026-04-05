@@ -158,10 +158,6 @@ def send_to_line(image_url: str):
                 "type": "image",
                 "originalContentUrl": clean_url,
                 "previewImageUrl": clean_url
-            },
-            {
-                "type": "text",
-                "text": f"📊 รายงาน CSI ประจำวัน - หน้า 14\n🕐 อัปเดต: {timestamp_str}\n✅ ข้อมูลล่าสุดเรียบร้อยครับ"
             }
         ]
     }
