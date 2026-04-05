@@ -168,7 +168,10 @@ def send_to_line(image_url: str):
         json=payload
     )
 
+    print(f"📨 LINE Status: {resp.status_code}")
+    print(f"📨 LINE Response: {resp.text}")
     if resp.status_code == 200:
+
         print("✅ ส่งเข้า LINE สำเร็จ!")
     else:
         print(f"❌ LINE Error {resp.status_code}: {resp.text}")
